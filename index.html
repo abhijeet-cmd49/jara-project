@@ -1173,6 +1173,32 @@
   );
 
   showToast("Ready 😄");
+async function updateVisitorCount() {
+
+  try {
+
+    let response = await fetch(
+      'https://ig792cg7gj.execute-api.ap-south-1.amazonaws.com/visitors'
+    );
+
+    let data = await response.json();
+
+    document.querySelector('.hint').innerHTML =
+      "आजपर्यंत <b>" +
+      data.visitors +
+      "</b> लोकांनी जरा घेतलं 🤏🔥";
+
+  }
+
+  catch(error) {
+
+    console.log("Visitor API Error:", error);
+
+  }
+
+}
+
+updateVisitorCount();
 
 </script>
 
