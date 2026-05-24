@@ -1,0 +1,1180 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+  <title>जरा 🤏</title>
+
+  <!-- Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Devanagari:wght@400;700;900&display=swap" rel="stylesheet">
+
+  <!-- Confetti -->
+  <script defer src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+  <style>
+
+    *{
+      box-sizing:border-box;
+    }
+
+    :root{
+      --bg-overlay:rgba(0,0,0,.48);
+      --card-bg:rgba(255,250,243,.97);
+      --text:#2a2118;
+      --muted:#6f6257;
+      --accent-soft:#fff2df;
+
+      --main-btn:#8e24aa;
+      --main-btn-dark:#6a1b9a;
+
+      --liquid-top:#8c3f00;
+      --liquid-mid:#a84d06;
+      --liquid-bottom:#5f2400;
+
+      --shadow:0 16px 36px rgba(0,0,0,.22);
+
+      --radius:22px;
+    }
+
+    html,body{
+      height:100%;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      margin:0;
+
+      min-height:100svh;
+
+      padding:6px;
+
+      font-family:'Noto Sans Devanagari',sans-serif;
+
+      color:var(--text);
+
+      background:
+      url('background.jpg')
+      center / cover no-repeat;
+
+      position:relative;
+
+      overflow:hidden;
+
+      display:grid;
+      place-items:center;
+    }
+
+    body::before{
+      content:"";
+      position:fixed;
+      inset:0;
+      background:var(--bg-overlay);
+      z-index:0;
+    }
+
+    /* Canvas */
+
+    #bgCanvas{
+      position:fixed;
+      inset:0;
+
+      width:100%;
+      height:100%;
+
+      z-index:0;
+
+      pointer-events:none;
+    }
+
+    /* Floating */
+
+    .floating{
+      position:fixed;
+
+      z-index:1;
+
+      pointer-events:none;
+
+      animation:float 4.6s ease-in-out infinite;
+
+      opacity:.95;
+
+      filter:drop-shadow(0 6px 10px rgba(0,0,0,.18));
+    }
+
+    .floating.one{
+      top:14px;
+      left:14px;
+      font-size:26px;
+    }
+
+    .floating.two{
+      top:12px;
+      right:14px;
+      font-size:26px;
+      animation-duration:5.2s;
+    }
+
+    .floating.three{
+      bottom:14px;
+      left:16px;
+      font-size:24px;
+      animation-duration:6s;
+    }
+
+    /* Layout */
+
+    .page{
+      position:relative;
+      z-index:2;
+
+      width:100%;
+
+      display:flex;
+      justify-content:center;
+      align-items:center;
+    }
+
+    .container{
+      width:min(100%,520px);
+
+      background:var(--card-bg);
+
+      border-radius:var(--radius);
+
+      box-shadow:var(--shadow);
+
+      padding:12px;
+
+      text-align:center;
+
+      backdrop-filter:blur(6px);
+
+      border:1px solid rgba(255,255,255,.45);
+
+      display:grid;
+
+      gap:8px;
+
+      max-height:calc(100svh - 12px);
+    }
+
+    h1{
+      margin:0;
+
+      font-size:clamp(2.2rem,7vw,3rem);
+
+      line-height:1;
+    }
+
+    .subtitle{
+      margin:0 auto;
+
+      font-size:13px;
+
+      line-height:1.35;
+
+      color:var(--muted);
+
+      max-width:30ch;
+    }
+
+    /* Meter */
+
+    .meter-wrap{
+      padding:8px 10px;
+
+      background:#fff8ef;
+
+      border-radius:18px;
+
+      text-align:left;
+    }
+
+    .meter-head{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+
+      margin-bottom:6px;
+
+      font-size:13px;
+
+      color:var(--muted);
+    }
+
+    .meter{
+      width:100%;
+
+      height:16px;
+
+      background:#ead8c5;
+
+      border-radius:999px;
+
+      overflow:hidden;
+    }
+
+    .meter-fill{
+      width:20%;
+      height:100%;
+
+      border-radius:999px;
+
+      background:
+      linear-gradient(
+      90deg,
+      #7d3000 0%,
+      #a84d06 55%,
+      #cf6a11 100%
+      );
+
+      transition:width .4s ease;
+    }
+
+    /* Message */
+
+    .message-box{
+      min-height:42px;
+
+      padding:8px 10px;
+
+      border-radius:16px;
+
+      background:var(--accent-soft);
+
+      color:#7c4200;
+
+      display:flex;
+      align-items:center;
+      justify-content:center;
+
+      font-size:15px;
+      font-weight:700;
+
+      line-height:1.3;
+    }
+
+    /* Glass */
+
+    .glass-area{
+      width:min(100%,310px);
+
+      margin:0 auto;
+
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+
+      gap:10px;
+    }
+
+    .tap-btn{
+      border:none;
+
+      background:transparent;
+
+      font-size:clamp(3.8rem,16vw,5.2rem);
+
+      line-height:1;
+
+      cursor:pointer;
+
+      padding:0;
+
+      flex-shrink:0;
+
+      filter:drop-shadow(0 5px 8px rgba(0,0,0,.18));
+    }
+
+    .tap-btn:active{
+      transform:translateY(1px) scale(.98);
+    }
+
+    .glass{
+      position:relative;
+
+      width:min(40vw,150px);
+      height:min(48vw,190px);
+
+      border-radius:18px 18px 24px 24px;
+
+      background:
+      linear-gradient(
+      180deg,
+      rgba(255,255,255,.84),
+      rgba(255,255,255,.32)
+      );
+
+      border:5px solid rgba(255,255,255,.78);
+
+      overflow:hidden;
+
+      display:flex;
+      align-items:flex-end;
+      justify-content:center;
+
+      box-shadow:
+      inset 0 0 0 1px rgba(255,255,255,.26),
+      0 16px 24px rgba(0,0,0,.15);
+    }
+
+    .liquid{
+      position:absolute;
+
+      left:0;
+      bottom:0;
+
+      width:100%;
+
+      height:20%;
+
+      background:
+      linear-gradient(
+      180deg,
+      var(--liquid-top) 0%,
+      var(--liquid-mid) 45%,
+      var(--liquid-bottom) 100%
+      );
+
+      transition:height .45s cubic-bezier(.2,.8,.2,1);
+
+      overflow:hidden;
+    }
+
+    .foam{
+      position:absolute;
+
+      left:0;
+      bottom:82%;
+
+      width:100%;
+      height:18%;
+
+      background:
+      radial-gradient(circle at 16% 70%, rgba(255,255,255,.98) 0 12px, transparent 13px),
+      radial-gradient(circle at 34% 40%, rgba(255,255,255,.96) 0 16px, transparent 17px),
+      radial-gradient(circle at 52% 70%, rgba(255,255,255,.98) 0 12px, transparent 13px),
+      radial-gradient(circle at 70% 44%, rgba(255,255,255,.96) 0 16px, transparent 17px),
+      radial-gradient(circle at 86% 64%, rgba(255,255,255,.98) 0 12px, transparent 13px);
+    }
+
+    /* Overflow Effect */
+
+    .overflow{
+      position:absolute;
+
+      top:-8px;
+      left:50%;
+
+      width:14px;
+      height:0;
+
+      transform:translateX(-50%);
+
+      background:
+      linear-gradient(
+      180deg,
+      #d97a1f,
+      #6b2600
+      );
+
+      border-radius:0 0 10px 10px;
+
+      opacity:0;
+
+      transition:height .5s ease, opacity .5s ease;
+    }
+
+    .overflow.show{
+      height:90px;
+      opacity:1;
+    }
+
+    /* Bubbles */
+
+    .bubble{
+      position:absolute;
+
+      bottom:-12px;
+
+      border-radius:50%;
+
+      background:rgba(255,240,225,.72);
+
+      animation:bubbleUp linear infinite;
+    }
+
+    .bubble.b1{left:16%;width:10px;height:10px;animation-duration:3.4s;}
+    .bubble.b2{left:34%;width:7px;height:7px;animation-duration:2.8s;}
+    .bubble.b3{left:54%;width:11px;height:11px;animation-duration:3.8s;}
+    .bubble.b4{left:70%;width:8px;height:8px;animation-duration:3.1s;}
+    .bubble.b5{left:82%;width:6px;height:6px;animation-duration:2.6s;}
+
+    .glass-text{
+      position:absolute;
+
+      inset:auto 12px 12px;
+
+      text-align:center;
+
+      font-size:11px;
+
+      color:rgba(255,255,255,.92);
+
+      text-shadow:0 1px 2px rgba(0,0,0,.26);
+
+      font-weight:700;
+    }
+
+    /* Buttons */
+
+    .controls{
+      display:grid;
+
+      grid-template-columns:1fr 1fr;
+
+      gap:8px;
+    }
+
+    .btn{
+      border:none;
+
+      border-radius:15px;
+
+      padding:10px 11px;
+
+      font-size:15px;
+      font-weight:800;
+
+      color:#fff;
+
+      cursor:pointer;
+
+      min-height:44px;
+
+      transition:.15s ease;
+
+      box-shadow:0 10px 20px rgba(0,0,0,.15);
+    }
+
+    .btn:active{
+      transform:translateY(1px) scale(.99);
+    }
+
+    .btn-main{
+      background:
+      linear-gradient(
+      180deg,
+      var(--main-btn),
+      var(--main-btn-dark)
+      );
+    }
+
+    .btn-share{
+      background:
+      linear-gradient(
+      180deg,
+      #28d466,
+      #1faa52
+      );
+    }
+
+    .btn-secret{
+      grid-column:1/-1;
+
+      background:
+      linear-gradient(
+      180deg,
+      #546e7a,
+      #37474f
+      );
+    }
+
+    .btn-danger{
+      grid-column:1/-1;
+
+      background:
+      linear-gradient(
+      180deg,
+      #ff7043,
+      #d84315
+      );
+    }
+
+    .btn:disabled{
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .hint{
+      margin:0;
+
+      font-size:11px;
+
+      color:var(--muted);
+    }
+
+    /* Toast */
+
+    .toast{
+      position:fixed;
+
+      left:50%;
+      bottom:14px;
+
+      transform:translateX(-50%) translateY(18px);
+
+      background:rgba(23,23,23,.92);
+
+      color:#fff;
+
+      padding:9px 12px;
+
+      border-radius:999px;
+
+      font-size:12px;
+
+      opacity:0;
+
+      pointer-events:none;
+
+      transition:.25s ease;
+
+      z-index:99;
+    }
+
+    .toast.show{
+      opacity:1;
+      transform:translateX(-50%) translateY(0);
+    }
+
+    /* Modal */
+
+    .secret-modal{
+      position:fixed;
+
+      inset:0;
+
+      background:rgba(14,14,14,.74);
+
+      display:none;
+
+      align-items:center;
+      justify-content:center;
+
+      z-index:100;
+
+      padding:18px;
+    }
+
+    .secret-modal.show{
+      display:flex;
+    }
+
+    .secret-card{
+      width:min(100%,360px);
+
+      background:#fffaf3;
+
+      border-radius:22px;
+
+      padding:18px 16px 16px;
+
+      text-align:center;
+
+      box-shadow:0 24px 55px rgba(0,0,0,.34);
+
+      position:relative;
+    }
+
+    .secret-close{
+      position:absolute;
+
+      top:10px;
+      right:10px;
+
+      border:none;
+
+      background:#ece5dc;
+
+      border-radius:999px;
+
+      width:34px;
+      height:34px;
+
+      font-size:20px;
+
+      cursor:pointer;
+    }
+
+    .secret-title{
+      margin:2px 34px 10px;
+
+      font-size:21px;
+      font-weight:900;
+    }
+
+    .secret-line{
+      font-size:15px;
+
+      line-height:1.45;
+
+      color:#5f4b3f;
+    }
+
+    /* Animations */
+
+    .shake{
+      animation:shake .45s ease-in-out 1;
+    }
+
+    .pulse{
+      animation:pulse .8s ease-in-out 1;
+    }
+
+    @keyframes float{
+      0%,100%{
+        transform:translateY(0) rotate(0deg);
+      }
+      50%{
+        transform:translateY(-10px) rotate(-2deg);
+      }
+    }
+
+    @keyframes bubbleUp{
+      0%{
+        transform:translateY(0) scale(.9);
+        opacity:0;
+      }
+
+      10%{
+        opacity:.9;
+      }
+
+      100%{
+        transform:translateY(-140px) scale(1.25);
+        opacity:0;
+      }
+    }
+
+    @keyframes shake{
+      0%{transform:translateX(0);}
+      18%{transform:translateX(-4px);}
+      36%{transform:translateX(4px);}
+      54%{transform:translateX(-3px);}
+      72%{transform:translateX(3px);}
+      100%{transform:translateX(0);}
+    }
+
+    @keyframes pulse{
+      0%{transform:scale(1);}
+      50%{transform:scale(1.03);}
+      100%{transform:scale(1);}
+    }
+
+    @media(max-width:420px){
+
+      .controls{
+        grid-template-columns:1fr;
+      }
+
+      .btn-secret,
+      .btn-danger{
+        grid-column:auto;
+      }
+
+      .container{
+        width:min(100%,96vw);
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- Canvas -->
+
+  <canvas id="bgCanvas"></canvas>
+
+  <!-- Floating -->
+
+  <div class="floating one">✨</div>
+  <div class="floating two">🍺</div>
+  <div class="floating three">🤏</div>
+
+  <div class="page">
+
+    <main class="container" id="app">
+
+      <h1>जरा 🤏</h1>
+
+      <p class="subtitle">
+        थोडं थांब… आधी glass भरू द्या 😄
+      </p>
+
+      <!-- Meter -->
+
+      <section class="meter-wrap">
+
+        <div class="meter-head">
+          <span>आग्रह Level</span>
+          <span id="meterLabel">20%</span>
+        </div>
+
+        <div class="meter">
+          <div class="meter-fill" id="meterFill"></div>
+        </div>
+
+      </section>
+
+      <!-- Message -->
+
+      <div class="message-box" id="messageBox">
+        एक tap करा 😄
+      </div>
+
+      <!-- Glass -->
+
+      <section class="glass-area">
+
+        <button class="tap-btn" id="tapBtn">
+          🍺
+        </button>
+
+        <div class="glass" id="glass">
+
+          <div class="overflow" id="overflow"></div>
+
+          <div class="liquid" id="liquid">
+
+            <div class="foam"></div>
+
+            <span class="bubble b1"></span>
+            <span class="bubble b2"></span>
+            <span class="bubble b3"></span>
+            <span class="bubble b4"></span>
+            <span class="bubble b5"></span>
+
+          </div>
+
+          <div class="glass-text" id="glassText">
+            थोडं भरलंय...
+          </div>
+
+        </div>
+
+      </section>
+
+      <!-- Buttons -->
+
+      <section class="controls">
+
+        <button class="btn btn-main" id="fillBtn">
+          Glass भरा 🍺
+        </button>
+
+        <button class="btn btn-share" id="shareBtn">
+          Share करा 🤏
+        </button>
+
+        <button class="btn btn-secret" id="secretBtn" disabled>
+          Secret Locked 😈
+        </button>
+
+        <button class="btn btn-danger" id="dangerBtn">
+          पुरे झालं 😂
+        </button>
+
+      </section>
+
+      <p class="hint">
+        जास्त taps = जास्त आग्रह 😄
+      </p>
+
+    </main>
+
+  </div>
+
+  <!-- Audio -->
+
+  <audio id="bgMusic" preload="auto">
+    <source src="funny.mp3" type="audio/mpeg">
+  </audio>
+
+  <!-- Toast -->
+
+  <div class="toast" id="toast">
+    Ready 😄
+  </div>
+
+  <!-- Secret Modal -->
+
+  <div class="secret-modal" id="secretModal">
+
+    <div class="secret-card">
+
+      <button class="secret-close" id="secretClose">
+        ×
+      </button>
+
+      <div class="secret-title">
+        Secret Mode 😈
+      </div>
+
+      <p class="secret-line">
+        “जरा” पासून सुरुवात होते…
+        आणि मग glass संपतो 😂
+      </p>
+
+      <p class="secret-line">
+        Tap चालू ठेवा 🍺🔥
+      </p>
+
+    </div>
+
+  </div>
+
+<script>
+
+  const fillBtn = document.getElementById('fillBtn');
+  const tapBtn = document.getElementById('tapBtn');
+  const shareBtn = document.getElementById('shareBtn');
+  const secretBtn = document.getElementById('secretBtn');
+  const dangerBtn = document.getElementById('dangerBtn');
+
+  const overflow = document.getElementById('overflow');
+
+  const secretModal = document.getElementById('secretModal');
+
+  const bgMusic = document.getElementById('bgMusic');
+
+  const secretClose = document.getElementById('secretClose');
+
+  const app = document.getElementById('app');
+
+  const toast = document.getElementById('toast');
+
+  const meterFill = document.getElementById('meterFill');
+
+  const meterLabel = document.getElementById('meterLabel');
+
+  const messageBox = document.getElementById('messageBox');
+
+  const liquid = document.getElementById('liquid');
+
+  const glass = document.getElementById('glass');
+
+  const glassText = document.getElementById('glassText');
+
+  const bgCanvas = document.getElementById('bgCanvas');
+
+  const ctx = bgCanvas.getContext('2d');
+
+  let level = 20;
+
+  let secretUnlocked = false;
+
+  const messages = [
+
+    "अरे वा 😄",
+    "थोडं अजून 😂",
+    "हे तर heavy चाललंय 🔥",
+    "Secret जवळ आलं 😈",
+    "Glass full होतोय 🍺",
+    "आता बस करा 😂🔥"
+
+  ];
+
+  function showToast(text){
+
+    toast.textContent = text;
+
+    toast.classList.add('show');
+
+    clearTimeout(showToast.t);
+
+    showToast.t =
+    setTimeout(() => {
+      toast.classList.remove('show');
+    },1700);
+
+  }
+
+  function playMusic(){
+
+    if(!bgMusic) return;
+
+    bgMusic.pause();
+
+    bgMusic.currentTime = 0;
+
+    bgMusic.play().catch(()=>{});
+
+  }
+
+  function burst(){
+
+    if(typeof confetti !== 'function') return;
+
+    confetti({
+      particleCount:50,
+      spread:70,
+      origin:{ y:0.6 }
+    });
+
+  }
+
+  function updateLevel(extra){
+
+    level += extra;
+
+    if(level > 120){
+      level = 120;
+    }
+
+    meterFill.style.width =
+    Math.min(level,100) + "%";
+
+    meterLabel.textContent =
+    level + "%";
+
+    liquid.style.height =
+    Math.min(level,100) + "%";
+
+    const idx =
+    Math.min(
+      messages.length - 1,
+      Math.floor((level - 20)/16)
+    );
+
+    messageBox.textContent =
+    messages[idx];
+
+    if(level >= 100){
+
+      overflow.classList.add('show');
+
+      glassText.textContent =
+      "Overflow 😂🔥";
+
+      if(!secretUnlocked){
+
+        secretUnlocked = true;
+
+        secretBtn.disabled = false;
+
+        secretBtn.textContent =
+        "Secret Open 😈";
+
+        showToast("Secret unlocked 🔥");
+
+      }
+
+    }
+
+    glass.classList.remove('shake');
+
+    void glass.offsetWidth;
+
+    glass.classList.add('shake');
+
+    app.classList.remove('pulse');
+
+    void app.offsetWidth;
+
+    app.classList.add('pulse');
+
+    burst();
+
+  }
+
+  function fillGlass(){
+
+    playMusic();
+
+    updateLevel(8);
+
+    if(navigator.vibrate){
+      navigator.vibrate(20);
+    }
+
+  }
+
+  function openSecret(){
+
+    if(!secretUnlocked){
+
+      showToast("आधी glass भरा 😂");
+
+      return;
+
+    }
+
+    secretModal.classList.add('show');
+
+    burst();
+
+  }
+
+  function closeSecret(){
+
+    secretModal.classList.remove('show');
+
+  }
+
+  function enoughButton(){
+
+    dangerBtn.innerHTML =
+    "उशीर झाला 😈🍺";
+
+    showToast("Escape नाही 😂");
+
+    burst();
+
+  }
+
+  fillBtn.addEventListener('click',fillGlass);
+
+  tapBtn.addEventListener('click',fillGlass);
+
+  secretBtn.addEventListener('click',openSecret);
+
+  secretClose.addEventListener('click',closeSecret);
+
+  dangerBtn.addEventListener('click',enoughButton);
+
+  shareBtn.addEventListener('click', async () => {
+
+    const shareText =
+    "जरा 🤏 website बघ 😂 https://YOUR-CLOUDFRONT-URL";
+
+    try{
+
+      if(navigator.share){
+
+        await navigator.share({
+          title:'जरा 🤏',
+          text:shareText,
+          url:'https://YOUR-CLOUDFRONT-URL'
+        });
+
+      } else {
+
+        await navigator.clipboard.writeText(shareText);
+
+        showToast("Link copied 😄");
+
+      }
+
+    } catch(e){}
+
+  });
+
+  /* Canvas */
+
+  function resizeCanvas(){
+
+    const dpr =
+    Math.max(1,
+    Math.min(2,
+    window.devicePixelRatio || 1));
+
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+
+    bgCanvas.width = Math.floor(w * dpr);
+    bgCanvas.height = Math.floor(h * dpr);
+
+    bgCanvas.style.width = w + 'px';
+    bgCanvas.style.height = h + 'px';
+
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+  }
+
+  const stars =
+  Array.from({length:40}, () => ({
+    x:Math.random(),
+    y:Math.random(),
+    r:0.7 + Math.random() * 1.5,
+    s:0.3 + Math.random() * 0.8,
+    a:0.22 + Math.random() * 0.5
+  }));
+
+  let animationRunning = true;
+
+  document.addEventListener(
+    "visibilitychange",
+    () => {
+      animationRunning = !document.hidden;
+    }
+  );
+
+  function drawCanvas(){
+
+    if(animationRunning){
+
+      const w = window.innerWidth;
+      const h = window.innerHeight;
+
+      ctx.clearRect(0,0,w,h);
+
+      for(const st of stars){
+
+        const x = st.x * w;
+        const y = st.y * h;
+
+        const pulse =
+        0.6 +
+        0.4 *
+        Math.sin(
+          Date.now() *
+          0.001 *
+          st.s +
+          st.x * 20
+        );
+
+        ctx.beginPath();
+
+        ctx.fillStyle =
+        `rgba(255,255,255,${
+          st.a * pulse
+        })`;
+
+        ctx.arc(
+          x,
+          y,
+          st.r * pulse,
+          0,
+          Math.PI * 2
+        );
+
+        ctx.fill();
+
+      }
+
+    }
+
+    requestAnimationFrame(drawCanvas);
+
+  }
+
+  resizeCanvas();
+
+  drawCanvas();
+
+  window.addEventListener(
+    'resize',
+    resizeCanvas
+  );
+
+  showToast("Ready 😄");
+
+</script>
+
+</body>
+</html>
