@@ -1198,7 +1198,13 @@ async function updateVisitorCount() {
 
 }
 
-updateVisitorCount();
+if(!localStorage.getItem("jaraVisited")){
+
+  updateVisitorCount();
+
+  localStorage.setItem("jaraVisited","true");
+
+}
 
 </script>
 
